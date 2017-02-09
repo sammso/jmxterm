@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.management.AttributeNotFoundException;
 import javax.management.JMException;
 import javax.management.MBeanAttributeInfo;
 import javax.management.MBeanServerConnection;
@@ -64,7 +65,11 @@ public class LiferayCachesCommand extends Command {
 		
 		List<String[]> stringsList = new ArrayList<String[]>();
 		for ( String bean : getLiferayStatisticBeans(session, domain) ) {
+			try {
 			stringsList.add(displayCache(session, domain, bean, fields));
+			} catch (AttributeNotFoundException anfe) {
+				
+			}
 		}
 		Collections.sort(stringsList, new Comparator<String[]>() {
 
@@ -117,7 +122,6 @@ public class LiferayCachesCommand extends Command {
 		
 		for (int i=2 ; i < fields.length ; i++) {
 			Object object = con.getAttribute(name, fields[i]);
-			
 			if (object instanceof Double) {
 				double value = ((Double)object).doubleValue();
 				cachesStats[i] =  String.valueOf(Math.round(value * 100));
