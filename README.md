@@ -22,11 +22,34 @@ liferay-multi-vm-clustered  com.liferay.portal.kernel.dao.orm.EntityCache.com.li
 liferay-multi-vm-clustered  com.liferay.portal.kernel.dao.orm.FinderCache.com.liferay.portal.model.impl.BackgroundTaskImpl.List2                                          0            0            1                  100
 ```
 
-To compile:
------------
-Test are still brokes, so it isi necessary to without tests
-
+You can also print SQL insert statements which helps to do cluster wide cache analysis by inserting those inserts to following table.
 
 ```
-mvn clean install -Dmaven.test.skip=true
+  CREATE TABLE CacheSizes (
+		node VARCHAR(12) NOT NULL,
+		cacheType VARCHAR(12) NOT NULL,
+		bean VARCHAR(255) NOT NULL,
+		objectCount INT NOT NULL,
+		cacheHits INT NOT NULL,
+		cacheMisses INT NOT NULL,
+		cacheMissPercentage INT NOT NULL,
+    PRIMARY KEY ( node, cacheType, bean )
+  );
+``` 
+
+To print SQL statement for it
+
+```
+$>liferaycaches -f sql -s myservername
+INSERT INTO CacheSizes VALUES ("serverName","liferay-multi-vm-clustered","com.liferay.portal.kernel.dao.orm.EntityCache",0,0,0,0);
+INSERT INTO CacheSizes VALUES ("serverName","liferay-multi-vm-clustered","com.liferay.portal.kernel.dao.orm.EntityCache.com.liferay.portal.model.impl.AccountImpl",0,0,0,0);
+...
+```
+
+
+To compile:
+-----------
+
+```
+mvn clean install
 ```
